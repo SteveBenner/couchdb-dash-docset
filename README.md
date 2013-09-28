@@ -13,7 +13,7 @@ This repo contains a Ruby script that generates the Dash docset automatically in
 
 The script assumes the existence of Ruby gems `sqlite3`, `nokogiri`, and `plist`.
 
-Included also is a `.tgz` archive containing the pre-built docset, which can be downloaded [here](#)
+Included also is a `.tgz` archive containing the pre-built docset, which can be downloaded [here](https://github.com/SteveBenner/couchdb-dash-docset/blob/master/CouchDB-1.4.docset.tgz?raw=true)
 
 ### To Add:
 - A Dash docset feed!!! Coming soon!
