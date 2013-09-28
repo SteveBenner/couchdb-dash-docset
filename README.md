@@ -9,7 +9,7 @@ CouchDB documentation source was downloaded from: https://readthedocs.org/projec
 Entry types and docset info are explained here: http://kapeli.com/docsets
 
 ## Update!!
-CouchDB 1.5 is currently in active development so I will be updating the script as well in the near future.
+[CouchDB 1.5](http://docs.couchdb.org/en/latest/contents.html) is currently in active development so I will be updating the script as well in the near future.
 
 # Inside
 This repo contains a Ruby script that generates the Dash docset automatically in the default location based on the user's home path. After running it, all you should have to do is open Dash settings and 'rescan' to add the docset.
