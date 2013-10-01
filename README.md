@@ -8,9 +8,6 @@ CouchDB documentation source was downloaded from: https://readthedocs.org/projec
 
 Entry types and docset info are explained here: http://kapeli.com/docsets
 
-## Update!!
-[CouchDB 1.5](http://docs.couchdb.org/en/latest/contents.html) is currently in active development so I will be updating the script as well in the near future.
-
 # Inside
 This repo contains a Ruby script that generates the Dash docset automatically in the default location based on the user's home path. After running it, all you should have to do is open Dash settings and 'rescan' to add the docset.
 
@@ -18,10 +15,11 @@ The script assumes the existence of Ruby gems `sqlite3`, `nokogiri`, and `plist`
 
 Included also is a `.tgz` archive containing the pre-built docset, which can be downloaded [here](https://github.com/SteveBenner/couchdb-dash-docset/blob/master/CouchDB-1.4.docset.tgz?raw=true)
 
-### To Add:
-- A Dash docset feed!!! Coming soon!
+## To Do (coming soon):
+- A hosted Dash docset feed!
+- Updated script for [CouchDB 1.5.x](http://docs.couchdb.org/en/latest/contents.html) which is in active development.
 
 ## Script notes
-The basic premise is mapping the HTML documentation using Nokogiri, which is like jQuery for Ruby, in that it makes playing with the XML DOM fun and easy. Actually, a javascript version of this done in node.js would probably be more efficacious, but I'm a Rubyist first and foremost.
+The basic premise is mapping the HTML documentation using Nokogiri, which is like jQuery for Ruby, in that it makes playing with the XML DOM fun and easy. Actually, a javascript version of this done in node.js would probably be more efficacious, but I'm a Rubyist first and foremost, and don't have experience with node.js yet.
 
-The code is a bit convoluted, mostly because I'm OCD about DRY code and can't stop myself, but also because I wanted to be able to maintain the generator in case the HTML changes. It is fairly semantic (generated using Sphinx) but with a few loops and meta-programming quirks I tried to make a tool that is generic enough to always re-use without much effort.
+The code is a bit convoluted, mostly because I'm OCD about DRY code and can't stop myself, but also because I wanted to be able to maintain the generator in case the HTML changes, which happened already in a significant update for version 1.5. I tried to make a tool that is generic enough to re-use and customize without much effort.
