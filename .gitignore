@@ -1,0 +1,8 @@
+# JetBrains IDE config files
+.idea
+.idea/*
+
+# Apple can go f*ck themselves
+.DS_Store
+.DS_Store?
+.Spotlight-V100

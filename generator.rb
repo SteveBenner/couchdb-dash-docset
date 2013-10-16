@@ -94,90 +94,75 @@ File.open(PLIST_PATH, 'w') { |f| f.write default_plist.update(additions).to_plis
 
 ################################################################
 
-# The main task of creating a docset is to map the HTML content to Dash's identifiers (entry types); obviously this is
-# volatile and subject to change upon new releases of either CouchDB documentation or Dash.
+# Micro helpers for DRY and semantic code!
 
-# This helper does the 'ground-work' so we can bypass having to write even one line of ugly-ass SQL
-# todo: decide whether or not to order entries based on their numerical value in the docs
-
-def add_entries(type, selector, url_selector = nil, filter = nil, url_filter = nil, &block)
-	abort 'Invalid database.' unless $db.class == SQLite3::Database
-
-	# Group the Nokogiri HTML element collections representing 'name' and 'url' and enumerate through them concurrently
-	# A 'Proc' object can be passed to filter each collection of nodes before processing
-	url_selector ||= selector
-	names        = (filter.nil? ? $html.css(selector).sort : $html.css(selector).sort.reject(&filter))
-	urls         = (url_filter.nil? ? $html.css(url_selector).sort : $html.css(url_selector).sort.reject(&url_filter))
-	urls         = urls.cycle # using an enumerator allows us to process a collection of 'urls' smaller than 'names'
-	raise "No elements found using selector: '#{url_selector.to_s}'" if urls.none?
-
-	names.each do |name_elem| # Nokogiri::XML::Element
-		url_elem = urls.next
-		url      = url_elem.attr 'href' # String
-
-		# The entry name and url are determined by the return value of the given blocks, for simple arbitrary modification
-		if block_given? # NOTE: returning multiple arguments in a single-line block has to be done via array
-			case block.arity
-				when 2
-					name, url = yield(name_elem, url)
-				when 1
-					name = yield(name_elem)
-				when 0
-					name = name_elem.text
-				else
-					raise "ERROR: Wrong number of arguments to block (#{block.arity})"
-			end
-		end
-
-		$db.execute "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{name}', '#{type}', '#{url}');"
-	end
+# removes the numbers before each title: "1. Title" => "Title"
+def remove_title(text)
+  text.gsub(/[\d.+]* ?(.*)/, '\\1')
 end
 
-# Enumerate through files, using Nokogiri to parse the HTML, CSS selectors to find the data, and regexes to format it
-[
-		'index.html',
-		'api-basics.html',
-		'query-servers.html',
-		File.join('api', 'reference.html')
+# Parse the following HTML files containing the documentation, using Nokogiri and CSS selectors to scrape the content
+files = [
+    'index.html',
+    'api-basics.html',
+    'query-servers.html',
+    File.join('api', 'reference.html')
 ]
-.collect { |filepath| File.open(File.join(DOC_ROOT, filepath), 'r') { |f| Nokogiri::XML f } }.each do |html|
-	$html = html # I find this quite inelegant, but I wasn't able to figure out how to access the local 'html' variable
-	             # representing the current Nokogiri::XML::Document from inside the helper method, so I reverted to using
-	             # a global as I don't have time to investigate further. I pretty much set myself up for this one by
-	             # implementing this operation with such arcane method/block chaining and closure usage...
 
+# This technique for creating a docset is based on mapping the HTML content to Dash's identifiers (entry types); in this
+# case I identified the correct selectors for appropriate data using web dev tools in Chrome, and Nokogiri does the rest
+entries = {}
+files.collect { |filepath| File.open(File.join(DOC_ROOT, filepath), 'r') { |f| Nokogiri::XML f } }.each do |html|
 	case fname = File.basename(html.url, '.html') # no need to keep typing the file extension
-		when 'index'
-			# Typical regex removes numbers before each title: "1. Title" => "Title"
+    when 'index'
+      entries[:Guide] = {
+          :entries => html.css('.toctree-l1 > a').reject { |e| e.text =~ /Reference/ }.collect { |e| remove_title e.text },
+          :links => html.css('.toctree-l1 > a').collect { |e| e.attr('href') }
+      }
+      entries[:Category] = {
+          :entries => html.css('.toctree-l1:nth-of-type(9) a').collect { |e| remove_title e.text },
+          :links => html.css('.toctree-l1:nth-of-type(9) a').collect { |e| e.attr('href') }
+      }
+      entries[:Struct] = {
+          :entries => html.css('.toctree-l1:nth-of-type(10) ul a').collect { |e| remove_title e.text },
+          :links => html.css('.toctree-l1:nth-of-type(10) ul a').collect { |e| e.attr('href') }
+      }
+      entries[:Option] = {
+          :entries => html.css('.toctree-l1:nth-of-type(11) ul a').collect { |e| remove_title e.text },
+          :links => html.css('.toctree-l1:nth-of-type(11) ul a').collect { |e| e.attr('href') }
+      }
 
-			add_entries(
-					'Guide', '.toctree-l1 > a', nil,
-					Proc.new { |e| e.text =~ /Reference/ } # references have their own entry types
-			) { |e| e.text.gsub(/\d+\. ?(.*)/, '\\1') }
+    when 'reference'
+      entries[:Method] = {
+          :entries => html.css('.toctree-l2 > a').collect { |e| remove_title e.text },
+          :links => html.css('.toctree-l2 > a').collect { |e| File.join 'api', e.attr('href') }
+      }
 
-			add_entries('Category', '.toctree-l1:nth-of-type(9) a')   { |e| e.text.gsub(/[\d.+]* ?(.*)/, '\\1') }
-			add_entries('Struct', '.toctree-l1:nth-of-type(10) ul a') { |e| e.text.gsub(/[\d.+]* ?(.*)/, '\\1') }
-			add_entries('Option', '.toctree-l1:nth-of-type(11) ul a') { |e| e.text.gsub(/[\d.+]* ?(.*)/, '\\1') }
+    when 'api-basics'
+      entries[:Type] = {
+          :entries => html.css('#request-format-and-responses ul p span').collect { |e| remove_title e.text },
+          :links => html.css('#request-format-and-responses h2 a').collect { |e| "api-basics.html#{e.attr 'href'}" }
+      }
+      entries[:Protocol] = {
+          :entries => html.css('.body > .section h2, .body > .section h3').collect { |e| remove_title e.children.sort.first.text },
+          # filter URLs to only select subsections
+          :links => html.css('.headerlink').reject { |e| e.attr('href') == '#api-basics' }.collect { |e| "api-basics.html#{e.attr 'href'}" }
+      }
 
-		when 'reference'
-			add_entries('Method', '.toctree-l2 > a'
-			) { |e, url| [ e.text.gsub(/[\d.+]* ?(.*)/, '\\1'), File.join('api', url) ] }
-
-		when 'api-basics'
-			add_entries(
-					'Type', '#request-format-and-responses ul p span', '#request-format-and-responses h2 a'
-			) { |e, url| [ e.text.gsub(/[\d.+]* ?(.*)/, '\\1'), "api-basics.html#{url}" ] }
-
-			add_entries(
-					'Protocol', '.body > .section h2, .body > .section h3', '.headerlink', nil,
-					lambda { |e| e.attr('href') == '#api-basics' } # we don't want the section header, just subsections
-			) { |e, url| [ e.children.sort.first.text.gsub(/[\d.+]* ?(.*)/, '\\1'), "api-basics.html#{url}" ] }
-
-		when 'query-servers'
-			add_entries('Function', '.function .descname', '.function a.headerlink:last-of-type'
-			) { |e, url| [ e.text, "query-servers.html#{url}" ] }
+    when 'query-servers'
+      entries[:Function] = {
+          :entries => html.css('.function .descname').collect { |e| remove_title e.text },
+          :links => html.css('.function a.headerlink:last-of-type').collect { |e| "query-servers.html#{e.attr 'href' }" }
+      }
 
 		else
 			raise "ERROR: Bad filename ('#{fname}')"
-	end
+  end
+end
+
+# Iterate over the two arrays, saving text and url data as entries
+entries.each do |entry_type, data|
+  data[:entries].zip(data[:links]).each do |name, url|
+    $db.execute "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{name}', '#{entry_type}', '#{url}');"
+  end
 end
