@@ -1,0 +1,376 @@
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Overview &mdash; Apache CouchDB 1.5 Documentation</title>
+    
+    <link rel="stylesheet" href="_static/rtd.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/css/badge_only.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.5.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="contents.html#document-about" />
+    <link rel="top" title="Apache CouchDB 1.5 Documentation" href="#" />
+ 
+<!-- RTD Extra Head -->
+
+
+
+<!-- 
+Read the Docs is acting as the canonical URL for your project. 
+If you want to change it, more info is available in our docs:
+  http://docs.readthedocs.org/en/latest/canonical.html
+-->
+<link rel="canonical" href="http://couchdb.readthedocs.org/en/latest/" />
+
+<script type="text/javascript">
+  // This is included here because other places don't have access to the pagename variable.
+  var READTHEDOCS_DATA = {
+    project: "couchdb",
+    version: "1.5.x",
+    language: "en",
+    page: "index",
+    theme: "couchdb",
+    docroot: "/share/doc/src/",
+    source_suffix: ".rst",
+    api_host: "https://readthedocs.org"
+  }
+  // Old variables
+  var doc_version = "1.5.x";
+  var doc_slug = "couchdb";
+  var page_name = "index";
+  var html_theme = "couchdb";
+</script>
+<!-- RTD Analytics Code -->
+<!-- Included in the header because you don't have a footer block. -->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17997319-1']);
+  _gaq.push(['_trackPageview']);
+
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<!-- end RTD Analytics Code -->
+<!-- end RTD <extrahead> -->
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li><a href="contents.html#document-contents">Apache CouchDB 1.5 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Apache CouchDB 1.5 Documentation</h1>
+  <p>
+    Welcome! This is
+    the documentation for Apache CouchDB
+    1.5.1.
+  </p>
+  
+<h2>Meet CouchDB</h2>
+<table class="contentstable" align="center">
+  <tr>
+    <td width="50%">
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-whatsnew/1.5">
+          What's new in CouchDB 1.5?
+        </a>
+        <br />
+        <span class="linkdescr">
+          or browse <a href="contents.html#document-whatsnew/index">all "What's new" documents</a>
+        </span>
+      </p>
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-intro/why">
+          Why CouchDB?
+        </a>
+        <br />
+        <span class="linkdescr">why you might want to use CouchDB</span>
+      </p>
+    <td width="50%">
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-intro/overview">
+          Technical Overview
+        </a>
+        <br />
+        <span class="linkdescr">a quick overview of technology used</span>
+      </p>
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-intro/consistency">
+          Eventual Consistency
+        </a>
+        <br />
+        <span class="linkdescr">how CouchDB handles synchronization</span>
+      </p>
+    </td>
+  </tr>
+</table>
+
+<h2>Getting started</h2>
+<table class="contentstable" align="center">
+  <tr>
+    <td width="50%">
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-install/index">
+          Installation guides
+        </a>
+        <br />
+        <span class="linkdescr">
+          install CouchDB on <a href="contents.html#document-install/windows">Windows</a>,
+          <a href="contents.html#document-install/mac">OS X</a> or
+          <a href="contents.html#document-install/unix">Linux</a>
+        </span>
+      </p>
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-intro/tour">
+          Tutorial
+        </a>
+        <br />
+        <span class="linkdescr">start using CouchDB with
+          <a href="contents.html#document-intro/futon">Futon</a> and
+          <a href="contents.html#document-intro/curl">cURL</a></span>
+      </p>
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-intro/api">
+          HTTP API overview
+        </a>
+        <br />
+        <span class="linkdescr">a short walk though the API</span>
+      </p>
+    <td width="50%">
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-couchapp/views/intro">
+          Guide to Views
+        </a>
+        <br />
+        <span class="linkdescr">how to query JSON documents</span>
+      </p>
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-replication/intro">
+          Replication
+        </a>
+        <br />
+        <span class="linkdescr">
+          painless master-master data synchronization
+        </span>
+      </p>
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-couchapp/ddocs">
+          Design Documents
+        </a>
+        <br />
+        <span class="linkdescr">
+          transform, update or validate your documents
+        </span>
+      </p>
+    </td>
+  </tr>
+</table>
+
+<h2>Reference Documentation &amp; Advanced Topics</h2>
+<table class="contentstable" align="center"><tr>
+  <tr>
+    <td width="50%">
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-api/index">
+          Complete HTTP API Reference
+        </a>
+        <br />
+        <span class="linkdescr">
+          something to come back to
+        </span>
+      </p>
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-externals">
+          External Processes
+        </a>
+        <br />
+        <span class="linkdescr">
+          adding even more functionality
+        </span>
+      </p>
+    </td>
+    <td width="50%" style="vertical-align: top;">
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-config/index">
+          Configuration Reference
+        </a>
+        <br />
+        <span class="linkdescr">tweak CouchDB to your liking</span>
+      </p>
+      <p class="biglink">
+        <a class="biglink" href="contents.html#document-maintenance/index">
+          Maintenance
+        </a>
+        <br />
+        <span class="linkdescr">
+          how to take care of your CouchDB
+        </span>
+      </p>
+    </td>
+  </tr>
+</table>
+
+
+<h2>Links</h2>
+<table class="contentstable" align="center"><tr>
+  <td width="50%">
+    <p class="biglink"><a class="biglink" href="contents.html#document-contents">Documentation Contents</a></p>
+    <p class="biglink"><a class="biglink" href="http-api.html">HTTP API Index</a></p>
+    <p class="biglink"><a class="biglink" href="contents.html#document-contributing">Contributing to this Documentation</a></p>
+  </td><td width="50%">
+    <p class="biglink"><a class="biglink" href="http://couchdb.org/">CouchDB Web site</a></p>
+    <p class="biglink"><a class="biglink" href="http://couchdb.org/#download">Download</a></p>
+    <p class="biglink"><a class="biglink" href="http://couchdb.org/#mailing-list">Mailing Lists</a></p>
+  </td></tr>
+</table>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="contents.html#document-contents">
+              <img class="logo" src="_static/logo.png" alt="Logo"/>
+            </a></p><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<div id="searchbox" style="display: none">
+
+<h3>Quick Search</h3>
+
+<form class="search" action="search.html" method="get">
+<input type="text" name="q" style="width:115px">
+<input type="submit" value="Go">
+<input type="hidden" name="check_keywords" value="yes">
+<input type="hidden" name="area" value="default">
+</form>
+
+<br>
+
+</div>
+
+<script type="text/javascript">$('#searchbox').show(0);</script><!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<!--
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.
+
+-->
+
+<h3>More Help</h3>
+
+<ul>
+<li><a href="https://couchdb.apache.org/">Homepage</a></li>
+<li><a href="http://wiki.apache.org/couchdb/">Wiki</a></li>
+<li><a href="https://couchdb.apache.org/#mailing-list">Mailing Lists</a></li>
+<li><a href="http://webchat.freenode.net/?channels=couchdb">IRC</a></li>
+<li><a href="https://issues.apache.org/jira/browse/CouchDB">Issues</a></li>
+<li><a href="download.html">Download</a></li>
+</ul>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="http-api.html" title="HTTP API Reference"
+             >API Reference</a></li>
+        <li class="right" >
+          <a href="config-ref.html" title="Configuration Reference"
+             >Config Reference</a> |</li>
+        <li><a href="contents.html#document-contents">Apache CouchDB 1.5 Documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, The Apache Software Foundation.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
