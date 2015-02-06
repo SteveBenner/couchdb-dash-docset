@@ -5,6 +5,8 @@
 
 require 'fileutils'
 require 'open-uri' # built-in Ruby module that encapsulates an HTTP request within the 'open' command
+require 'bundler'
+Bundler.setup
 require 'sqlite3'
 require 'nokogiri' # awesome XML/HTML parser
 require 'plist'    # manipulate Dash docset info
