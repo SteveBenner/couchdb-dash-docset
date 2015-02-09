@@ -50,7 +50,7 @@ FileUtils.copy 'couchdb-icon-32px.png', DOCSET_PATH.join('icon.png')
 FileUtils.cp_r "couchdb-#{COUCHDB_VERSION}/.", DOC_ROOT
 
 ### SQLite database initialization
-$db = SQLite3::Database.new DOCSET_PATH.join('Contents', 'Resources', 'docSet.dsidx')
+$db = SQLite3::Database.new DOCSET_PATH.join('Contents', 'Resources', 'docSet.dsidx').to_s
 
 # Use this command to remove the index table
 #$db.execute 'DROP TABLE searchIndex'
@@ -156,3 +156,5 @@ entries.each do |entry_type, data|
     $db.execute "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{name}', '#{entry_type}', '#{url}');"
   end
 end
+
+puts "Successfully generated Docset for CouchDB #{COUCHDB_VERSION} - to start using in Dash, simply rescan Docsets."

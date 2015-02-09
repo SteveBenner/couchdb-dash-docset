@@ -1,15 +1,15 @@
-# CouchDB docset for Dash
+# CouchDB Docset for Dash
 [Dash](http://kapeli.com/dash) is an excellent and amazing documentation and code snippet manager for Mac made by Bogdan Popescu of Kapeli
 
 [Apache CouchDB](http://couchdb.apache.org/) is an open-source NoSQL database written in Erlang that uses an [HTTP API](http://docs.couchdb.org/en/latest/)
 
 CouchDB documentation source was downloaded from: https://readthedocs.org/projects/couchdb/downloads/
 
-Entry types and docset info are explained here: http://kapeli.com/docsets
+Entry types and Docset info is explained here: http://kapeli.com/docsets
 
 ## Installation
-1. Install gems needed by the script with `bundle install` (**skip this step if gems already available**)
-2. Run the script `docset-gen`, which creates the Docset and automatically installs it for the current user.
+1. Install gems with the command `bundle install` (**skip this step if gems already available**)
+2. Run the script `docset-gen` to create the Docset and automatically install it for the current user.
 3. Open Dash, and under the 'Docsets' tab click the 'rescan' button to load the CouchDB docset.
 
 **OR**
