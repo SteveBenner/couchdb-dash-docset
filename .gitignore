@@ -17,3 +17,6 @@ Thumbs.db
 ## Bundler
 .gems/
 .bundle/
+
+## Locally generated docset
+CouchDB-1.4.docset

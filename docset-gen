@@ -1,0 +1,158 @@
+#!/usr/bin/env ruby
+#
+# This is a tool for generating Dash Docsets from prebuilt HTML documentation. It is configured for Apache CouchDB.
+#
+# 'Dash' is an amazing documentation and code snippet manager by Bogdan Popescu of Kapeli
+# http://kapeli.com/dash
+#
+# 'Apache CouchDB' is an open-source NoSQL database written in Erlang that uses an HTTP API
+# http://couchdb.apache.org/
+# http://docs.couchdb.org/en/latest/
+# https://readthedocs.org/projects/couchdb/downloads/
+#
+require 'fileutils'
+require 'pathname'
+require 'open-uri' # built-in Ruby module that encapsulates an HTTP request within the 'open' command
+require 'bundler'
+Bundler.setup
+require 'sqlite3'  # database interface
+require 'nokogiri' # awesome XML/HTML parser
+require 'plist'    # used to manipulate Dash Docset info
+
+COUCHDB_VERSION = '1.4'
+
+# This list of Entry types was manually scraped from: http://kapeli.com/docsets
+SUPPORTED_ENTRY_TYPES = %w[
+  Attribute Binding Callback Category Class Command Constant Constructor Define Directive Element Entry Enum Error Event Exception Field File Filter Framework Function Global Guide Instance Instruction Interface Keyword Library Literal Macro Method Mixin Module Namespace Notation Object Operator Option Package Parameter Property Protocol Record Sample Section Service Struct Style Tag Trait Type Union Value Variable
+]
+# If possible, populate the list of Entry types from latest version of the official website
+SUPPORTED_ENTRY_TYPES.replace Nokogiri::HTML(open('http://kapeli.com/docsets2')).css('.drowx > span')
+                                .collect { |i| i.text }
+
+#
+# File system operations
+#
+
+DOCSET_PATH = Pathname('~')
+  .join('Library', 'Application Support', 'Dash', 'DocSets', "CouchDB-#{COUCHDB_VERSION}.docset").expand_path
+DOC_ROOT    = DOCSET_PATH.join 'Contents', 'Resources', 'Documents'
+PLIST_PATH  = DOCSET_PATH.join 'Contents', 'info.plist'
+
+# Create Docset directory in the default location for Mac OSX
+DOC_ROOT.mkpath
+
+# Create SQLite database
+File.new DOCSET_PATH.join('Contents', 'Resources', 'docSet.dsidx'), 'w'
+
+# Copy Files
+Dir.chdir File.dirname(__FILE__)
+FileUtils.copy 'couchdb-icon-32px.png', DOCSET_PATH.join('icon.png')
+FileUtils.cp_r "couchdb-#{COUCHDB_VERSION}/.", DOC_ROOT
+
+### SQLite database initialization
+$db = SQLite3::Database.new DOCSET_PATH.join('Contents', 'Resources', 'docSet.dsidx')
+
+# Use this command to remove the index table
+#$db.execute 'DROP TABLE searchIndex'
+
+# Generate the SQLite database records for the Dash Docset index with these commands
+$db.execute 'CREATE TABLE searchIndex(id INTEGER PRIMARY KEY, name TEXT, type TEXT, path TEXT);'
+$db.execute 'CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);'
+
+#
+# Plist generation/modification
+#
+
+default_plist = {
+  'CFBundleIdentifier'   => 'CouchDB',
+  'CFBundleName'         => "CouchDB #{COUCHDB_VERSION}",
+  'DocSetPlatformFamily' => 'CouchDB',
+  'isDashDocset'         => true
+}
+additions = {
+  'DocSetPubliserName' => 'Stephen Benner',
+  'dashIndexFilePath'  => 'index.html' # interesting caveat here: setting an absolute path will NOT work
+  #'isJavaScriptEnabled' => true # enables .js scripts in Dash Docsets
+}
+
+# Parse plist file
+# plist = Plist::parse_xml PLIST_PATH
+# Create new plist file
+File.open(PLIST_PATH, 'w') { |f| f.write default_plist.update(additions).to_plist }
+
+#
+# Micro helpers for DRY and semantic code!
+#
+
+# removes the numbers before each title: "1. Title" => "Title"
+def remove_title(text)
+  text.gsub(/[\d.+]* ?(.*)/, '\\1')
+end
+
+#
+# Parsing
+#
+
+# Using Nokogiri and CSS selectors, Docset data is scraped from the following HTML docs
+files = %w[index.html api-basics.html query-servers.html api/reference.html]
+
+# This technique for creating a Docset is based on mapping the HTML content to Dash's identifiers (Entry types)
+# I identified the correct selectors for appropriate data using Chrome's web dev tools; Nokogiri does the rest
+entries = {}
+files.collect { |filepath| File.open(DOC_ROOT.join(filepath), 'r') { |f| Nokogiri::XML f } }.each do |html|
+  case fname = File.basename(html.url, '.html') # no need to keep typing out the file extension
+    when 'index'
+      entries[:Guide] = {
+        :entries => html.css('.toctree-l1 > a').reject { |e| e.text =~ /Reference/ }
+          .collect { |e| remove_title e.text },
+        :links => html.css('.toctree-l1 > a').collect { |e| e.attr('href') }
+      }
+      entries[:Category] = {
+        :entries => html.css('.toctree-l1:nth-of-type(9) a').collect { |e| remove_title e.text },
+        :links => html.css('.toctree-l1:nth-of-type(9) a').collect { |e| e.attr('href') }
+      }
+      entries[:Struct] = {
+        :entries => html.css('.toctree-l1:nth-of-type(10) ul a').collect { |e| remove_title e.text },
+        :links => html.css('.toctree-l1:nth-of-type(10) ul a').collect { |e| e.attr('href') }
+      }
+      entries[:Option] = {
+        :entries => html.css('.toctree-l1:nth-of-type(11) ul a').collect { |e| remove_title e.text },
+        :links => html.css('.toctree-l1:nth-of-type(11) ul a').collect { |e| e.attr('href') }
+      }
+
+    when 'reference'
+      entries[:Method] = {
+        :entries => html.css('.toctree-l2 > a').collect { |e| remove_title e.text },
+        :links => html.css('.toctree-l2 > a').collect { |e| File.join 'api', e.attr('href') }
+      }
+
+    when 'api-basics'
+      entries[:Type] = {
+        :entries => html.css('#request-format-and-responses ul p span').collect { |e| remove_title e.text },
+        :links => html.css('#request-format-and-responses h2 a').collect { |e| "api-basics.html#{e.attr 'href'}" }
+      }
+      entries[:Protocol] = {
+        :entries => html.css('.body > .section h2, .body > .section h3')
+          .collect { |e| remove_title e.children.sort.first.text },
+        # filter URLs to only select subsections
+        :links => html.css('.headerlink').reject { |e| e.attr('href') == '#api-basics' }
+          .collect { |e| "api-basics.html#{e.attr 'href'}" }
+      }
+
+    when 'query-servers'
+      entries[:Function] = {
+        :entries => html.css('.function .descname').collect { |e| remove_title e.text },
+        :links => html.css('.function a.headerlink:last-of-type').collect { |e| "query-servers.html#{e.attr 'href' }" }
+      }
+
+    else
+      raise "ERROR: Bad filename ('#{fname}')"
+  end
+end
+
+# Iterate over the two arrays containing Entry types and their data, creating the SQL entries
+entries.each do |entry_type, data|
+  data[:entries].zip(data[:links]).each do |name, url|
+    $db.execute "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{name}', '#{entry_type}', '#{url}');"
+  end
+end
