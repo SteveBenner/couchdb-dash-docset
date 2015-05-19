@@ -8,8 +8,8 @@ CouchDB documentation source was downloaded from: https://readthedocs.org/projec
 
 Entry types and Docset info is explained here: http://kapeli.com/docsets
 
-## Installation
-1. Install gems with the command `bundle install` (**skip this step if gems already available**)
+## Generation / Installation
+1. The generator script is dependent upon gems `sqlite3`, `nokogiri`, and `plist`. **If you already have them installed on your system, you can skip this step**. Otherwise, run `bundle install`.
 2. Run the script `docset-gen` to create the Docset and automatically install it for the current user.
 3. Open Dash, and under the 'Docsets' tab click the 'rescan' button to load the CouchDB docset.
 

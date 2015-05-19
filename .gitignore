@@ -1,4 +1,4 @@
-## Apple seriously, comon
+# Apple seriously, comon
 ._*
 .DS_Store
 .DS_Store?
@@ -8,15 +8,16 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-## Vim, you are no longer cool
+# Vim, you are no longer cool
 *~
 
-## JetBrains IDE configuration files
+# JetBrains IDE configuration files
 .idea/
 
-## Bundler
+# Bundler
 .gems/
 .bundle/
+Gemfile.lock
 
-## Locally generated docset
-CouchDB-1.4.docset
+# Locally-generated docsets
+CouchDB-*.*.docset
