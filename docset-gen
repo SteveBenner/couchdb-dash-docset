@@ -148,7 +148,7 @@ end
 # Iterate over the two arrays containing Entry types and their data, creating the SQL entries
 entries.each do |entry_type, data|
   data[:entries].zip(data[:links]).each do |name, url|
-	  next if (url.nil? || url.empty?)
+	  next if (url.nil? || url.empty?) # It is important to avoid inserting null or empty path entries into the DB
     $db.execute "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{name}', '#{entry_type}', '#{url}');"
   end
 end
