@@ -21,20 +21,16 @@ require 'plist'    # used to manipulate Dash Docset info
 
 COUCHDB_VERSION = '1.4'
 
-# This list of Entry types was manually scraped from: http://kapeli.com/docsets
+# This list of Entry types was manually scraped from: https://kapeli.com/docsets#supportedentrytypes
 SUPPORTED_ENTRY_TYPES = %w[
   Attribute Binding Callback Category Class Command Constant Constructor Define Directive Element Entry Enum Error Event Exception Field File Filter Framework Function Global Guide Instance Instruction Interface Keyword Library Literal Macro Method Mixin Module Namespace Notation Object Operator Option Package Parameter Property Protocol Record Sample Section Service Struct Style Tag Trait Type Union Value Variable
 ]
-# If possible, populate the list of Entry types from latest version of the official website
-SUPPORTED_ENTRY_TYPES.replace Nokogiri::HTML(open('http://kapeli.com/docsets2')).css('.drowx > span')
-                                .collect { |i| i.text }
 
 #
 # File system operations
 #
 
-DOCSET_PATH = Pathname('~')
-  .join('Library', 'Application Support', 'Dash', 'DocSets', "CouchDB-#{COUCHDB_VERSION}.docset").expand_path
+DOCSET_PATH = Pathname("~/Library/Application Support/Dash/DocSets/CouchDB-#{COUCHDB_VERSION}.docset").expand_path
 DOC_ROOT    = DOCSET_PATH.join 'Contents', 'Resources', 'Documents'
 PLIST_PATH  = DOCSET_PATH.join 'Contents', 'info.plist'
 
@@ -47,7 +43,7 @@ File.new DOCSET_PATH.join('Contents', 'Resources', 'docSet.dsidx'), 'w'
 # Copy Files
 Dir.chdir File.dirname(__FILE__)
 FileUtils.copy 'couchdb-icon-32px.png', DOCSET_PATH.join('icon.png')
-FileUtils.cp_r "couchdb-#{COUCHDB_VERSION}/.", DOC_ROOT
+FileUtils.cp_r "source/couchdb-#{COUCHDB_VERSION}/.", DOC_ROOT
 
 ### SQLite database initialization
 $db = SQLite3::Database.new DOCSET_PATH.join('Contents', 'Resources', 'docSet.dsidx').to_s
@@ -72,11 +68,9 @@ default_plist = {
 additions = {
   'DocSetPubliserName' => 'Stephen Benner',
   'dashIndexFilePath'  => 'index.html' # interesting caveat here: setting an absolute path will NOT work
-  #'isJavaScriptEnabled' => true # enables .js scripts in Dash Docsets
+  #'isJavaScriptEnabled' => true       # Enabling this would allow JavaScript to be run in Dash Docsets
 }
 
-# Parse plist file
-# plist = Plist::parse_xml PLIST_PATH
 # Create new plist file
 File.open(PLIST_PATH, 'w') { |f| f.write default_plist.update(additions).to_plist }
 
@@ -126,10 +120,11 @@ files.collect { |filepath| File.open(DOC_ROOT.join(filepath), 'r') { |f| Nokogir
         :links => html.css('.toctree-l2 > a').collect { |e| File.join 'api', e.attr('href') }
       }
 
-    when 'api-basics'
+	  when 'api-basics'
+			entry_elems = html.css('#request-format-and-responses ul p span')
       entries[:Type] = {
-        :entries => html.css('#request-format-and-responses ul p span').collect { |e| remove_title e.text },
-        :links => html.css('#request-format-and-responses h2 a').collect { |e| "api-basics.html#{e.attr 'href'}" }
+        :entries => entry_elems.collect { |e| remove_title e.text },
+        :links => ["api-basics.html#{html.css('#request-format-and-responses h2 a').first.attr 'href'}"] * entry_elems.count
       }
       entries[:Protocol] = {
         :entries => html.css('.body > .section h2, .body > .section h3')
@@ -153,8 +148,10 @@ end
 # Iterate over the two arrays containing Entry types and their data, creating the SQL entries
 entries.each do |entry_type, data|
   data[:entries].zip(data[:links]).each do |name, url|
+	  next if (url.nil? || url.empty?)
     $db.execute "INSERT OR IGNORE INTO searchIndex(name, type, path) VALUES ('#{name}', '#{entry_type}', '#{url}');"
   end
 end
 
-puts "Successfully generated Docset for CouchDB #{COUCHDB_VERSION} - to start using in Dash, simply rescan Docsets."
+puts "Successfully generated and installed the Docset for CouchDB #{COUCHDB_VERSION}"
+puts "To activate it, open the Dash options, navigate to the 'Docsets' section, and press 'Rescan'."

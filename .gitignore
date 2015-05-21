@@ -20,4 +20,4 @@ Thumbs.db
 Gemfile.lock
 
 # Locally-generated docsets
-CouchDB-*.*.docset
+CouchDB-*.*.docset/
