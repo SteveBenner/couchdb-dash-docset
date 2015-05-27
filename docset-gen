@@ -60,15 +60,15 @@ $db.execute 'CREATE UNIQUE INDEX anchor ON searchIndex (name, type, path);'
 #
 
 default_plist = {
-  'CFBundleIdentifier'   => 'CouchDB',
-  'CFBundleName'         => "CouchDB #{COUCHDB_VERSION}",
-  'DocSetPlatformFamily' => 'CouchDB',
+  'CFBundleIdentifier'   => 'couchDB',
+  'CFBundleName'         => 'CouchDB',
+  'DocSetPlatformFamily' => 'couchDB',
   'isDashDocset'         => true
 }
 additions = {
-  'DocSetPubliserName' => 'Stephen Benner',
   'dashIndexFilePath'  => 'index.html' # interesting caveat here: setting an absolute path will NOT work
-  #'isJavaScriptEnabled' => true       # Enabling this would allow JavaScript to be run in Dash Docsets
+  #'isJavaScriptEnabled' => true,      # Enabling this would allow JavaScript to be run in Dash Docsets
+  # 'DocSetPublisherName' => 'Stephen Benner'
 }
 
 # Create new plist file
